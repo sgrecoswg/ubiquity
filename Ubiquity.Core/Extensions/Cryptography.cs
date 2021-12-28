@@ -6,11 +6,11 @@ using System.Text;
 namespace Ubiquity.Core.Extensions.Cryptography
 {
     public static class Cryptography
-    {
-        private const string initVector = "SensibleProgrammingl9uzpgzl88";
+    {       
+        private const string initVector = "12345678963258741258963254178";//please change if your using this as is
         // This constant is used to determine the keysize of the encryption algorithm
         private const int keysize = 256;
-        private const string passPhrase = "SensibleProgramming!123";
+        private const string passPhrase = "<your pass phrase>";//please change if your using this as is
 
         //Encrypt
         public static string Encrypt(this string plainText)
