@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ubiquity.Core.Extensions
 {
@@ -47,6 +48,12 @@ namespace Ubiquity.Core.Extensions
             return self;
         }
 
+        /// <summary>
+        /// Copies the properties from one object to the other
+        /// </summary>
+        /// <param name="source">The source object</param>
+        /// <param name="destination">Where the properties are going</param>
+        /// <param name="skipTheseProps">properties we don't want to copy</param>
         public static void CopyPropertiesTo(this object source, object destination, params string[] skipTheseProps)
         {
             // If source is null this will throw an exception
@@ -95,6 +102,12 @@ namespace Ubiquity.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Get a proepry from an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static object GetProperty(this object obj, string name)
         {
             object propValue = null;
@@ -106,6 +119,12 @@ namespace Ubiquity.Core.Extensions
             return propValue;
         }
 
+        /// <summary>
+        /// Sets the value of a property
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="value"></param>
         public static void SetPropertyValue(this object obj, string propertyName, object value)
         {
             PropertyInfo propInfo = obj.GetType().GetProperty(propertyName);
@@ -115,6 +134,14 @@ namespace Ubiquity.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Tries to get a value feom an element in a node
+        /// </summary>
+        /// <param name="parentEl"></param>
+        /// <param name="elementName"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static string TryGetElementValue(this XElement parentEl, string elementName, string defaultValue = null, string type = null)
         {
             var foundEl = parentEl.Element(elementName);
@@ -147,6 +174,12 @@ namespace Ubiquity.Core.Extensions
             return defaultValue;
         }
 
+        /// <summary>
+        /// Gets a property from an object
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="member"></param>
+        /// <returns></returns>
         public static object GetDynamicProperty(this object o, string member)
         {
             try
@@ -353,14 +386,264 @@ namespace Ubiquity.Core.Extensions
             return items != null && items.Count() > 0;
         }
 
+        /// <summary>
+        /// A check to see if it's null.
+        /// </summary>
+        /// <comment>May not help optimize, but makes it more readable. Use your best judgement</comment>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static bool IsNull(this object obj)
         {
             return obj == null;
         }
 
+        /// <summary>
+        /// A check to see if something is not null
+        /// </summary>
+        ///<comment>May not help optimize, but makes it more readable. Use your best judgement</comment>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static bool IsNotNull(this object obj)
         {
             return obj != null;
+        }
+
+        /// <summary>
+        /// Tries to comvert an object to a string that represents a DateTime
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        private static string ConvertToDateString(object date)
+        {
+            if (date == null)
+                return string.Empty;
+
+            return date == null ? string.Empty : Convert.ToDateTime(date).ConvertDate();
+        }
+
+        /// <summary>
+        /// Turns an object to a string
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static string ConvertToString(object value)
+        {
+            return Convert.ToString(ReturnEmptyIfNull(value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static int ConvertToInt(object value)
+        {
+            return Convert.ToInt32(ReturnZeroIfNull(value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static long ConvertToLong(object value)
+        {
+            return Convert.ToInt64(ReturnZeroIfNull(value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static decimal ConvertToDecimal(object value)
+        {
+            return Convert.ToDecimal(ReturnZeroIfNull(value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        private static DateTime ConvertToDateTime(object date)
+        {
+            return Convert.ToDateTime(ReturnDateTimeMinIfNull(date));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static object ReturnEmptyIfNull(this object value)
+        {
+            if (value == DBNull.Value)
+                return string.Empty;
+            if (value == null)
+                return string.Empty;
+            return value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static object ReturnZeroIfNull(this object value)
+        {
+            if (value == DBNull.Value)
+                return 0;
+            if (value == null)
+                return 0;
+            return value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static object ReturnDateTimeMinIfNull(this object value)
+        {
+            if (value == DBNull.Value)
+                return DateTime.MinValue;
+            if (value == null)
+                return DateTime.MinValue;
+            return value;
+        }
+
+        /// <summary>
+        /// Turns a DataTable into a List of objects T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tbl"></param>
+        /// <returns></returns>
+        public static List<T> ToListOf<T>(this DataTable tbl) where T : new()
+        {
+            // define return list
+            List<T> lst = new List<T>();
+
+            // go through each row
+            foreach (DataRow r in tbl.Rows)
+            {
+                // add to the list
+                lst.Add(CreateItemFromRow<T>(r));
+            }
+
+            // return the list
+            return lst;
+        }
+
+        /// <summary>
+        /// Function that creates an object from the given data row
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public static T CreateItemFromRow<T>(DataRow row) where T : new()
+        {
+            // create a new object
+            T item = new T();
+
+            // set the item
+            SetItemFromRow(item, row);
+
+            // return 
+            return item;
+        }
+
+        /// <summary>
+        /// Turns a row into an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public static T ToClass<T>(this DataRow row) where T : new()
+        {
+            return CreateItemFromRow<T>(row);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="row"></param>
+        public static void SetItemFromRow<T>(T item, DataRow row) where T : new()
+        {
+            var properties = TypeDescriptor.GetProperties(typeof(T));
+
+            Dictionary<string, string> _propertyNameConversions = new Dictionary<string, string>();
+            for (int i = 0; i < properties.Count; i++)
+            {
+                string _columnName;
+                var _currentProp = properties[i];
+                var hasColumnAtttribute = _currentProp.Attributes.OfType<ColumnAttribute>().Any();
+                if (hasColumnAtttribute)
+                {
+                    ColumnAttribute _att = _currentProp.GetAttribute<ColumnAttribute>();
+                    _columnName = _att.Name;
+                    _propertyNameConversions.Add(_columnName, _currentProp.Name);
+                }
+                else
+                {
+                    _columnName = _currentProp.Name;
+                    _propertyNameConversions.Add(_columnName, _columnName);
+                }
+            }
+
+            // go through each column
+            foreach (DataColumn c in row.Table.Columns)
+            {
+                string columnMappedName = string.Empty;
+                bool _hasKey = _propertyNameConversions.TryGetValue(c.ColumnName, out columnMappedName);
+                if (_hasKey)
+                {
+                    // find the property for the column
+                    PropertyInfo p = item.GetType().GetProperty(columnMappedName);
+
+                    // if exists, set the value
+                    if (p != null && row[c] != DBNull.Value)
+                    {
+                        if (p.PropertyType == typeof(DateTime))
+                        {
+                            p.SetValue(item, ConvertToDateTime(row[c]), null);
+                        }
+                        else if (p.PropertyType == typeof(DateTime?))
+                        {
+                            p.SetValue(item, ConvertToDateTime(row[c]), null);
+                        }
+                        else if (p.PropertyType == typeof(int))
+                        {
+                            p.SetValue(item, ConvertToInt(row[c]), null);
+                        }
+                        else if (p.PropertyType == typeof(long))
+                        {
+                            p.SetValue(item, ConvertToLong(row[c]), null);
+                        }
+                        else if (p.PropertyType == typeof(decimal))
+                        {
+                            p.SetValue(item, ConvertToDecimal(row[c]), null);
+                        }
+                        else if (p.PropertyType == typeof(String))
+                        {
+                            if (row[c].GetType() == typeof(DateTime))
+                            {
+                                p.SetValue(item, ConvertToDateString(row[c]), null);
+                            }
+                            else
+                            {
+                                p.SetValue(item, ConvertToString(row[c]), null);
+                            }
+                        }
+                        else
+                        {
+                            p.SetValue(item, Convert.ChangeType(row[c], p.PropertyType), null);
+                        }
+                    }
+                }
+            }
         }
     }
 }

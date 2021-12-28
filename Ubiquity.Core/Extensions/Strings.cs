@@ -582,5 +582,33 @@ namespace Ubiquity.Core.Extensions
             return string.Empty;
         }
 
+        public static int[] ToInts(this string[] a)
+        {
+            int[] _result = new int[a.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                _result[i] = Convert.ToInt32(a[i]);
+            }
+
+            return _result;
+        }
+
+        public static string[] ToUpper(this string[] a)
+        {
+            string[] result = new string[a.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                result[i] = a[i].ToUpper();
+            }
+            return result;
+        }
+
+
+        public static byte[] ToBytes(this string s)
+        {
+            return Encoding.UTF8.GetBytes(s);
+        }
+
+
     }
 }

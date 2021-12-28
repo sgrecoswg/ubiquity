@@ -66,6 +66,7 @@ namespace Ubiquity.Core.Extensions
             string textValue = value.ToString();
             xw.WriteAttributeString(localName, textValue);
         }
+      
         /// <summary>
         /// Parses a string and returns the enumeration value, if valid.
         /// </summary>

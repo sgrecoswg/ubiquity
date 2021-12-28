@@ -10,7 +10,7 @@ namespace Ubiquity.Core.Extensions
     public static class CollectionExtension
     {
         /// <summary>
-        /// Converts a List objevt to a Collection object.
+        /// Converts a List object to a Collection object.
         /// </summary>
         /// <typeparam name="T">An object in a list.</typeparam>
         /// <param name="items">The List object we want to convert</param>
