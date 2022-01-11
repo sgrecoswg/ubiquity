@@ -10,4 +10,11 @@
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
+	<!--<ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))" >
+		<CSFile Exclude="*.*"/>
+	</ItemGroup>
+	<ItemGroup Condition="$(TargetFramework.StartsWith('net4'))" >
+		<CSFile Include="*.cs"/>
+	</ItemGroup>-->
+
 </Project>

@@ -24,7 +24,7 @@ namespace Ubiquity.Core.Extensions
         }
 
         /// <summary>
-        ///// 
+        ///
         /// </summary>
         /// <param name="extension"></param>
         /// <returns></returns>

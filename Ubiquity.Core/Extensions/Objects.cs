@@ -15,6 +15,8 @@ using Microsoft.CSharp.RuntimeBinder;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -273,20 +275,7 @@ namespace Ubiquity.Core.Extensions
             if (obj == null) return null;
             return obj.GetType().GetAttribute<T>(inherit);
         }
-
-        /// <summary>
-        /// Gets the specified attribute for the assembly.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="val"></param>
-        /// <returns></returns>
-        public static T GetAttribute<T>(this Enum val) where T : Attribute
-        {
-            var fi = val.GetType().GetField(val.ToString());
-            var atts = fi.GetCustomAttributes(typeof(T), false);
-            if (atts.Length == 0) return null;
-            return (T)atts[0];
-        }
+               
 
         /// <summary>
         /// Turns a list of T to a data table
@@ -397,6 +386,9 @@ namespace Ubiquity.Core.Extensions
             return obj == null;
         }
 
+#if NET5_0
+        [Obsolete("You dont need to use this anymore, please use 'is not null' instead ")]
+#endif
         /// <summary>
         /// A check to see if something is not null
         /// </summary>
